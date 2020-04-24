@@ -1,2 +1,2 @@
 # ASZInterview
-Only for interview
+Only for React and Redux interview 
