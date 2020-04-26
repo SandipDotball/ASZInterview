@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Modal, DatePicker } from 'antd';
 import moment from 'moment';
+import { wait } from '../utilites/customWait';
 
 const dateFormat = 'DD/MM/YYYY';
 
@@ -9,9 +10,27 @@ const layout = {
   wrapperCol: { span: 24 },
 };
 function TodoForm(props) {
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
+  };
+
+  const onHandleOk = async () => {
+    setConfirmLoading(true);
+    await wait(2000);
+    form
+      .validateFields()
+      .then(wait(2000))
+      .then((values) => {
+        props.onCreate(values);
+        setConfirmLoading(false);
+        form.resetFields();
+      })
+      .catch((info) => {
+        setConfirmLoading(false);
+        console.log('Validate Failed:', info);
+      });
   };
 
   return (
@@ -21,17 +40,8 @@ function TodoForm(props) {
         visible={props.modalVisible}
         okText={props.okText}
         cancelText={props.cancelText}
-        onOk={() => {
-          form
-            .validateFields()
-            .then((values) => {
-              props.onCreate(values);
-              form.resetFields();
-            })
-            .catch((info) => {
-              console.log('Validate Failed:', info);
-            });
-        }}
+        onOk={onHandleOk}
+        confirmLoading={confirmLoading}
         onCancel={() => props.setModalVisible(false)}>
         <Form
           {...layout}

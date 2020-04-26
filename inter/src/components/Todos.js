@@ -35,7 +35,6 @@ function Todos() {
           okText='New Todo'
           cancelText='Cancel'
           modalTitle='Add New Todo'
-          // initialValues={{ action: 'asd', dateAdded: moment('04/29/2020') }}
         />
       </CreateModalButton>
       <TableLists data={todoState.todos} columns={todoColumns} />

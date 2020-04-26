@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Modal } from 'antd';
+import { wait } from '../utilites/customWait';
 
 const layout = {
   labelCol: { span: 24 },
@@ -7,8 +8,27 @@ const layout = {
 };
 function UserForm(props) {
   const [form] = Form.useForm();
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
+  };
+
+  const onHandleOk = async () => {
+    setConfirmLoading(true);
+    await wait(2000);
+    form
+      .validateFields()
+      .then(wait(2000))
+      .then((values) => {
+        props.onCreate(values);
+        setConfirmLoading(false);
+        form.resetFields();
+      })
+      .catch((info) => {
+        setConfirmLoading(false);
+        console.log('Validate Failed:', info);
+      });
   };
 
   return (
@@ -18,17 +38,8 @@ function UserForm(props) {
         visible={props.modalVisible}
         okText={props.okText}
         cancelText={props.cancelText}
-        onOk={() => {
-          form
-            .validateFields()
-            .then((values) => {
-              props.onCreate(values);
-              form.resetFields();
-            })
-            .catch((info) => {
-              console.log('Validate Failed:', info);
-            });
-        }}
+        onOk={onHandleOk}
+        confirmLoading={confirmLoading}
         onCancel={() => props.setModalVisible(false)}>
         <Form
           {...layout}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
+import { wait } from './customWait';
 const { confirm } = Modal;
 
 export const removeUserConfirm = (record, action, forUse) => {
@@ -13,9 +14,10 @@ export const removeUserConfirm = (record, action, forUse) => {
     okText: 'Delete',
     okType: 'danger',
     cancelText: 'No',
-    onOk() {
-      console.log('Delete');
+    async onOk() {
+      await wait(2000);
       action(record.key);
+      console.log('Delete');
     },
     onCancel() {
       console.log('Cancel');
