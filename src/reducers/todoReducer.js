@@ -7,7 +7,6 @@ const INITIALSTATE = {
   todos: dataJson,
   loading: true,
 };
-console.log(INITIALSTATE);
 const todoReducer = (state = INITIALSTATE, action) => {
   switch (action.type) {
     case types.ADD_TODO:
