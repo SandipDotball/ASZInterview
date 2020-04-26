@@ -1,7 +1,9 @@
 import * as types from '../constants/types';
+const localData = window.localStorage && localStorage.getItem('users');
+const dataJson = localData ? JSON.parse(localData) : [];
 
 const INITIALSTATE = {
-  users: [],
+  users: dataJson,
   loading: true,
 };
 const userReducer = (state = INITIALSTATE, action) => {
@@ -13,23 +15,29 @@ const userReducer = (state = INITIALSTATE, action) => {
         users: [...state.users, action.payload],
       };
     case types.EDIT_USER:
+      const editUsers = state.users.map((u) => {
+        if (u.key === action.payload.key) {
+          return Object.assign({}, u, {
+            ...action.payload,
+          });
+        }
+        return u;
+      });
+      window.localStorage.setItem('users', JSON.stringify(editUsers));
       return {
         ...state,
         loading: false,
-        users: state.users.map((u) => {
-          if (u.key === action.payload.key) {
-            return Object.assign({}, u, {
-              ...action.payload,
-            });
-          }
-          return u;
-        }),
+        users: editUsers,
       };
     case types.REMOVE_USER:
+      const removeUser = state.users.filter(
+        (user) => action.payload !== user.key
+      );
+      window.localStorage.setItem('users', JSON.stringify(removeUser));
       return {
         ...state,
         loading: false,
-        users: state.users.filter((user) => action.payload !== user.key),
+        users: removeUser,
       };
     default:
       return state;

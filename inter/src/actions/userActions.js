@@ -1,9 +1,13 @@
 import * as types from '../constants/types';
+import { setLocalStorage } from '../utilites/addlocalStorage';
 
-export const createUser = (value) => ({
-  type: types.ADD_USER,
-  payload: value,
-});
+export const createUser = (value) => {
+  setLocalStorage(value, 'users');
+  return {
+    type: types.ADD_USER,
+    payload: value,
+  };
+};
 
 export const editUser = (value) => ({
   type: types.EDIT_USER,

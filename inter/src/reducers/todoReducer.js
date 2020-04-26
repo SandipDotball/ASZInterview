@@ -1,9 +1,13 @@
 import * as types from '../constants/types';
 
+const localData = window.localStorage && localStorage.getItem('todos');
+const dataJson = localData ? JSON.parse(localData) : [];
+
 const INITIALSTATE = {
-  todos: [],
+  todos: dataJson,
   loading: true,
 };
+console.log(INITIALSTATE);
 const todoReducer = (state = INITIALSTATE, action) => {
   switch (action.type) {
     case types.ADD_TODO:
@@ -13,23 +17,29 @@ const todoReducer = (state = INITIALSTATE, action) => {
         todos: [...state.todos, action.payload],
       };
     case types.EDIT_TODO:
+      const editTodos = state.todos.map((u) => {
+        if (u.key === action.payload.key) {
+          return Object.assign({}, u, {
+            ...action.payload,
+          });
+        }
+        return u;
+      });
+      window.localStorage.setItem('todos', JSON.stringify(editTodos));
       return {
         ...state,
         loading: false,
-        todos: state.todos.map((u) => {
-          if (u.key === action.payload.key) {
-            return Object.assign({}, u, {
-              ...action.payload,
-            });
-          }
-          return u;
-        }),
+        todos: editTodos,
       };
     case types.REMOVE_TODO:
+      const removeTodos = state.todos.filter(
+        (todo) => action.payload !== todo.key
+      );
+      window.localStorage.setItem('todos', JSON.stringify(removeTodos));
       return {
         ...state,
         loading: false,
-        todos: state.todos.filter((todo) => action.payload !== todo.key),
+        todos: removeTodos,
       };
     default:
       return state;
